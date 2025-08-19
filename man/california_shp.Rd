@@ -4,7 +4,9 @@
 \name{california_shp}
 \alias{california_shp}
 \title{California state SpatialPolygonsDataFrame object.}
-\format{A SpatialPolygonsDataFrame object at the 1:20,000,000 resolution level.}
+\format{
+A SpatialPolygonsDataFrame object at the 1:20,000,000 resolution level.
+}
 \source{
 \url{https://www.census.gov/geo/maps-data/data/cbf/cbf_state.html}
 }

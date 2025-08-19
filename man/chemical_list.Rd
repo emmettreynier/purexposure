@@ -4,7 +4,8 @@
 \name{chemical_list}
 \alias{chemical_list}
 \title{California Pesticide Use Report chemical codes.}
-\format{A list of 26 elements. Each element is a data frame with a variable
+\format{
+A list of 26 elements. Each element is a data frame with a variable
 number of rows ranging from 3,579 to 3,934 and two columns:
 \describe{
   \item{chem_code}{An integer giving the chemical code. This uniquely
@@ -12,7 +13,8 @@ number of rows ranging from 3,579 to 3,934 and two columns:
   \item{chemname}{A character vector giving common chemical name for each
   active ingredient. These are usually listed on the pesticide product
   label.}
-}}
+}
+}
 \source{
 \url{ftp://transfer.cdpr.ca.gov/pub/outgoing/pur_archives}
 }

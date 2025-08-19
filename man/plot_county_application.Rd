@@ -132,14 +132,14 @@ fresno_list2$map
 chemical_class_df <- purrr::map2_dfr(2010, c("methidathion", "parathion",
                                              "naled", "malathion",
                                              "trichlorfon"),
-                                     find_chemical_codes) %>%
-     dplyr::mutate(chemical_class = "organophosphates") %>%
+                                     find_chemical_codes) \%>\%
+     dplyr::mutate(chemical_class = "organophosphates") \%>\%
      dplyr::select(-chemical)
 op_yuba <- pull_clean_pur(2010, "yuba",
                           chemicals = chemical_class_df$chemname,
                           verbose = F, sum_application = T,
                           sum = "chemical_class",
-                          chemical_class = chemical_class_df) %>%
+                          chemical_class = chemical_class_df) \%>\%
    plot_county_application()
 op_yuba$map
 }

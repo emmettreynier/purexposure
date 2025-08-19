@@ -56,6 +56,6 @@
 #' and writes out files (exposure values, meta data, and plots) to a specified
 #' directory.
 #'
-#' @docType package
-#' @name purexposure
+#' @keywords internal
+"_PACKAGE"
 NULL

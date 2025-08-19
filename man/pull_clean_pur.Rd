@@ -187,12 +187,12 @@ df <- pull_clean_pur(years = 2000:2001,
                      aerial_ground = TRUE)
 
 # filter to active ingredients present in particular products
-prod_nos <- find_product_name(2003, "insecticide") %>%
-    dplyr::select(prodno) %>%
+prod_nos <- find_product_name(2003, "insecticide") \%>\%
+    dplyr::select(prodno) \%>\%
     tibble_to_vector()
 
-df2 <- pull_clean_pur(2003, "10") %>%
-    dplyr::filter(prodno %in% prod_nos)
+df2 <- pull_clean_pur(2003, "10") \%>\%
+    dplyr::filter(prodno \%in\% prod_nos)
 
 # Sum application by active ingredients
 df3 <- pull_clean_pur(years = 2009:2010,
@@ -202,7 +202,7 @@ df3 <- pull_clean_pur(years = 2009:2010,
 
 # Or by chemical classes
 chemical_class_df <- rbind(find_chemical_codes(2000, "methylene"),
-                           find_chemical_codes(2000, "aldehyde")) %>%
+                           find_chemical_codes(2000, "aldehyde")) \%>\%
    dplyr::rename(chemical_class = chemical)
 
 df4 <- pull_clean_pur(years = 1995,

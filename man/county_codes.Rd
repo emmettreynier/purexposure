@@ -4,7 +4,8 @@
 \name{county_codes}
 \alias{county_codes}
 \title{California Pesticide Use Report county codes.}
-\format{A data frame with 58 rows and three columns:
+\format{
+A data frame with 58 rows and three columns:
 \describe{
   \item{county_name}{A character vector giving California county names.}
   \item{pur_code}{A character vector giving two-digit PUR county codes (ranging
@@ -13,7 +14,8 @@
   to FIPS codes.}
   \item{fips_code}{A character vector giving six-digit FIPS county codes
   corresponding to each California county.}
-}}
+}
+}
 \source{
 \url{ftp://transfer.cdpr.ca.gov/pub/outgoing/pur_archives}
 \url{http://www2.census.gov/geo/docs/reference/cenpop2010/county/CenPop2010_Mean_CO.txt}

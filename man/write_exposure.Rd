@@ -122,7 +122,7 @@ out files (exposure values, meta data, and plots) to a specified directory.
 library(magrittr)
 \donttest{
 chemical_class_df <- rbind(find_chemical_codes(2000:2001, "sulfur"),
-                           find_chemical_codes(2000:2001, "methyl bromide")) %>%
+                           find_chemical_codes(2000:2001, "methyl bromide")) \%>\%
    dplyr::rename(chemical_class = chemical)
 pur <- pull_clean_pur(2000:2001, counties = "fresno",
                       chemicals = chemical_class_df$chemname,
