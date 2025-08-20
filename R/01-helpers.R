@@ -41,28 +41,12 @@ list_pur_archives <- function(
 help_pull_pur <- function(year, counties = "all", quiet = FALSE) {
 
   current_dir <- getwd()
-  url <- paste0("ftp://transfer.cdpr.ca.gov/pub/outgoing/pur_archives/pur",
+  url <- paste0("https://files.cdpr.ca.gov/pub/outgoing/pur_archives/pur",
                 year, ".zip")
   file <- paste0("pur", year, ".zip")
 
-  # if (!"all" %in% counties) {
-  #   codes <- find_counties(counties)
-  # } else {
-
-  #   sm_year <- substr(year, 3, 4)
-
-  #   if (year > 2015) {
-  #     files <- grep(paste0("udc", sm_year, "_"), list.files(paste0("pur", year)),
-  #                   value = TRUE)
-  #   } else {
-  #     files <- grep(paste0("udc", sm_year, "_"), list.files(), value = TRUE)
-  #   }
-
-  #   codes <- substr(files, 7, 8)
-  # }
-
   if (!exists("purexposure_package_env")) {
-
+    options(timeout = 600)
     dir <- tempdir()
     setwd(dir)
     utils::download.file(url, destfile = file, mode = "wb", quiet = quiet)
@@ -72,14 +56,21 @@ help_pull_pur <- function(year, counties = "all", quiet = FALSE) {
     purexposure_package_env$pur_lst <- list()
 
     if (!"all" %in% counties) {
-
+      codes <- find_counties(counties)
       for (i in 1:length(codes)) {
         purexposure_package_env$pur_lst[[paste0(year, "_", codes[i])]] <-
           help_read_in_counties(codes[i], type = "codes", year = year)
       }
 
     } else {
-
+      sm_year <- substr(year, 3, 4)
+      if (year > 2015) {
+        files <- grep(paste0("udc", sm_year, "_"), list.files(paste0("pur", year)),
+                      value = TRUE)
+      } else {
+        files <- grep(paste0("udc", sm_year, "_"), list.files(), value = TRUE)
+      }
+      codes <- substr(files, 7, 8)
       for (i in 1:length(files)) {
         purexposure_package_env$pur_lst[[paste0(year, "_", codes[i])]] <-
           help_read_in_counties(files[i], type = "files", year = year)
@@ -92,7 +83,7 @@ help_pull_pur <- function(year, counties = "all", quiet = FALSE) {
     to_be_downloaded_files <- c()
 
     if (!"all" %in% counties) {
-
+      codes <- find_counties(counties)
       for (i in 1:length(codes)) {
         if (is.null(purexposure_package_env$pur_lst[[paste0(year, "_", codes[i])]])) {
           to_be_downloaded <- c(to_be_downloaded, codes[i])
@@ -100,7 +91,14 @@ help_pull_pur <- function(year, counties = "all", quiet = FALSE) {
       }
 
     } else {
-
+      sm_year <- substr(year, 3, 4)
+      if (year > 2015) {
+        files <- grep(paste0("udc", sm_year, "_"), list.files(paste0("pur", year)),
+                      value = TRUE)
+      } else {
+        files <- grep(paste0("udc", sm_year, "_"), list.files(), value = TRUE)
+      }
+      codes <- substr(files, 7, 8)
       for (i in 1:length(codes)) {
         if (is.null(purexposure_package_env$pur_lst[[paste0(year, "_", codes[i])]])) {
           to_be_downloaded <- c(to_be_downloaded, codes[i])

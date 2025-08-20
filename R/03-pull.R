@@ -49,6 +49,7 @@
 #' df3 <- pull_raw_pur(years = 2017, counties = c("colusa"))
 #' }
 #' @importFrom magrittr %>%
+#' @import data.table
 #' @export
 pull_raw_pur <- function(
   years = "all", counties = "all", verbose = TRUE, quiet = FALSE
