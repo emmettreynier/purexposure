@@ -37,111 +37,44 @@ list_pur_archives <- function(
   )
 }
 
-#' @importFrom magrittr %>%
-help_pull_pur <- function(year, counties = "all", quiet = FALSE) {
-
-  current_dir <- getwd()
-  url <- paste0("https://files.cdpr.ca.gov/pub/outgoing/pur_archives/pur",
-                year, ".zip")
-  file <- paste0("pur", year, ".zip")
-
-  if (!exists("purexposure_package_env")) {
+#' @import data.table 
+help_pull_pur <- function(year_in, file_dt, counties = "all", quiet = FALSE, dest_dir = NULL){
+  if(is.null(dest_dir)) dest_dir = tempdir()
+  file = here::here(dest_dir, file_dt[year == year_in]$name)
+  # Check if zip already downloaded in dest_dir
+  dir.create(here::here(dest_dir), showWarnings = FALSE)
+  already_downloaded = list.files(here::here(dest_dir), pattern = 'pur\\d{4}\\.zip$') |>
+    stringr::str_extract('\\d{4}') |>
+    as.numeric()
+  # Download and put in dest_dir if not already downloaded 
+  if(!(year_in %in% already_downloaded)){
     options(timeout = 600)
-    dir <- tempdir()
-    setwd(dir)
-    utils::download.file(url, destfile = file, mode = "wb", quiet = quiet)
-    utils::unzip(file, exdir = dir)
-
-    purexposure_package_env <<- new.env()
-    purexposure_package_env$pur_lst <- list()
-
-    if (!"all" %in% counties) {
-      codes <- find_counties(counties)
-      for (i in 1:length(codes)) {
-        purexposure_package_env$pur_lst[[paste0(year, "_", codes[i])]] <-
-          help_read_in_counties(codes[i], type = "codes", year = year)
-      }
-
-    } else {
-      sm_year <- substr(year, 3, 4)
-      if (year > 2015) {
-        files <- grep(paste0("udc", sm_year, "_"), list.files(paste0("pur", year)),
-                      value = TRUE)
-      } else {
-        files <- grep(paste0("udc", sm_year, "_"), list.files(), value = TRUE)
-      }
-      codes <- substr(files, 7, 8)
-      for (i in 1:length(files)) {
-        purexposure_package_env$pur_lst[[paste0(year, "_", codes[i])]] <-
-          help_read_in_counties(files[i], type = "files", year = year)
-      }
-    }
-
-  } else {
-
-    to_be_downloaded <- c()
-    to_be_downloaded_files <- c()
-
-    if (!"all" %in% counties) {
-      codes <- find_counties(counties)
-      for (i in 1:length(codes)) {
-        if (is.null(purexposure_package_env$pur_lst[[paste0(year, "_", codes[i])]])) {
-          to_be_downloaded <- c(to_be_downloaded, codes[i])
-        }
-      }
-
-    } else {
-      sm_year <- substr(year, 3, 4)
-      if (year > 2015) {
-        files <- grep(paste0("udc", sm_year, "_"), list.files(paste0("pur", year)),
-                      value = TRUE)
-      } else {
-        files <- grep(paste0("udc", sm_year, "_"), list.files(), value = TRUE)
-      }
-      codes <- substr(files, 7, 8)
-      for (i in 1:length(codes)) {
-        if (is.null(purexposure_package_env$pur_lst[[paste0(year, "_", codes[i])]])) {
-          to_be_downloaded <- c(to_be_downloaded, codes[i])
-          to_be_downloaded_files <- c(to_be_downloaded_files, files[i])
-        }
-      }
-    }
-
-    if (!is.null(to_be_downloaded)) {
-      options(timeout = 600)
-      dir <- tempdir()
-      setwd(dir)
-      utils::download.file(url, destfile = file, mode = "wb", quiet = quiet)
-      utils::unzip(file, exdir = dir)
-
-      for (i in 1:length(to_be_downloaded)) {
-
-        if (!"all" %in% counties) {
-          purexposure_package_env$pur_lst[[paste0(year, "_", to_be_downloaded[i])]] <-
-            help_read_in_counties(to_be_downloaded[i], type = "codes", year = year)
-        } else {
-          purexposure_package_env$pur_lst[[paste0(year, "_", to_be_downloaded[i])]] <-
-            help_read_in_counties(to_be_downloaded_files[i], type = "files", year = year)
-        }
-      }
-    }
+    utils::download.file(
+      url = file_dt[year == year_in]$url, 
+      destfile = file,
+      mode = "wb", 
+      quiet = quiet
+    )
   }
-
-  for (i in 1:length(codes)) {
-
-    pur_data <- purexposure_package_env$pur_lst[[paste0(year, "_", codes[i])]]
-    if (i == 1) {
-      pur_data_out <- pur_data
-    } else {
-      pur_data_out <- rbind(pur_data_out, pur_data)
-    }
-
+  # Extract zip to the dest dir
+  utils::unzip(file, exdir = stringr::str_remove(file,'\\.zip'))
+  # Bind county tables (filtering to `counties`)
+  all_files = list.files(
+    stringr::str_remove(file,'\\.zip'),
+    pattern = '^udc\\d{2}_\\d{2}\\.txt$', 
+    full.names = TRUE
+  )
+  # Filter to just counties specified
+  if(!"all" %in% counties) {
+    codes <- find_counties(counties)
+    files_to_read = all_files[
+      stringr::str_extract(all_files,'\\d{2}(?=\\.txt)') %in% codes
+    ]
+  }else{
+    files_to_read = all_files
   }
-
-  setwd(current_dir)
-
-  return(pur_data_out)
-
+  all_dt = lapply(files_to_read, fread) |> rbindlist()
+  return(all_dt)
 }
 
 help_read_in_counties <- function(code_or_file, type, year) {

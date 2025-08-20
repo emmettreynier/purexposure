@@ -25,6 +25,7 @@
 #' @param quiet TRUE / FALSE indicating whether you would like a
 #'   message and progress bar printed for each year of PUR data that
 #'   is downloaded. The default value is FALSE.
+#' @param dest_dir directory to put zip files in. If \code{NULL}, put in temp dir.
 #'
 #' @return A data frame with 33 columns. Different years and counties for which
 #'   data was pulled are indicated by \code{applic_dt} and \code{county_cd},
@@ -52,7 +53,7 @@
 #' @import data.table
 #' @export
 pull_raw_pur <- function(
-  years = "all", counties = "all", verbose = TRUE, quiet = FALSE
+  years = "all", counties = "all", verbose = TRUE, quiet = FALSE, dest_dir = NULL
 ) {
 
   # suppressMessages(
@@ -137,12 +138,12 @@ pull_raw_pur <- function(
 
   if (!"all" %in% counties) {
 
-    raw_df <- purrr::map_dfr(years, help_pull_pur, counties = counties,
+    raw_df <- purrr::map_dfr(years, help_pull_pur, file_dt = file_dt, counties = counties,
                              quiet = quiet)
 
   } else {
 
-    raw_df <- purrr::map_dfr(years, help_pull_pur, counties = "all",
+    raw_df <- purrr::map_dfr(years, help_pull_pur, file_dt = file_dt, counties = "all",
                              quiet = quiet)
 
   }

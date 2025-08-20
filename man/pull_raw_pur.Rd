@@ -4,7 +4,13 @@
 \alias{pull_raw_pur}
 \title{Pull raw PUR data by counties and years.}
 \usage{
-pull_raw_pur(years = "all", counties = "all", verbose = TRUE, quiet = FALSE)
+pull_raw_pur(
+  years = "all",
+  counties = "all",
+  verbose = TRUE,
+  quiet = FALSE,
+  dest_dir = NULL
+)
 }
 \arguments{
 \item{years}{A four-digit numeric year or vector of years, starting with
@@ -28,6 +34,8 @@ default value is TRUE.}
 \item{quiet}{TRUE / FALSE indicating whether you would like a
 message and progress bar printed for each year of PUR data that
 is downloaded. The default value is FALSE.}
+
+\item{dest_dir}{directory to put zip files in. If \code{NULL}, put in temp dir.}
 }
 \value{
 A data frame with 33 columns. Different years and counties for which
