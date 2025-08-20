@@ -73,61 +73,17 @@ help_pull_pur <- function(year_in, file_dt, counties = "all", quiet = FALSE, zip
   }else{
     files_to_read = all_files
   }
-  all_dt = lapply(files_to_read, fread) |> rbindlist()
+  all_dt = purrr::map_dfr(files_to_read, help_read_in_counties)
   return(all_dt)
 }
 
-help_read_in_counties <- function(code_or_file, type, year) {
-
-  sm_year <- substr(year, 3, 4)
-
-  if (type == "codes") {
-
-    if (year > 2015) {
-
-      if (dir.exists(paste0("pur", year))) {
-        change_dir <- T
-        setwd(paste0("pur", year))
-      }
-
-      raw_data <- suppressWarnings(suppressMessages(
-        readr::read_csv(paste0("udc", sm_year, "_", code_or_file, ".txt"),
-                        progress = FALSE)))
-
-      if (exists("change_dir")) setwd("..")
-
-    } else {
-      raw_data <- suppressWarnings(suppressMessages(
-        readr::read_csv(paste0("udc", sm_year, "_", code_or_file, ".txt"),
-                        progress = FALSE)))
-    }
-
-
-    raw_data <- dplyr::mutate_all(raw_data, as.character)
-
-  } else if (type == "files") {
-
-    if (year > 2015) {
-      if (dir.exists(paste0("pur", year))) {
-        change_dir <- T
-        setwd(paste0("pur", year))
-      }
-
-      raw_data <- suppressWarnings(suppressMessages(
-        readr::read_csv(code_or_file, progress = FALSE)))
-
-      if (exists("change_dir")) setwd("..")
-
-    } else {
-      raw_data <- suppressWarnings(suppressMessages(
-        readr::read_csv(code_or_file, progress = FALSE)))
-    }
-
-
-    raw_data <- dplyr::mutate_all(raw_data, as.character)
-
-  }
-
+help_read_in_counties <- function(file) {
+  year = stringr::str_extract(file, '(?<=pur)\\d{4}')
+  # Read the raw data and convert all cols to char 
+  # (inconsistent types btw yrs)
+  raw_data <- suppressWarnings(suppressMessages(
+        readr::read_csv(file, progress = FALSE)))
+  raw_data <- dplyr::mutate_all(raw_data, as.character)
   # neither of these columns are documented in PUR guide, and they
   # are inconsistently included in PUR datasets.
   if ("error_flag" %in% colnames(raw_data)) {

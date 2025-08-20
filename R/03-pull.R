@@ -56,13 +56,6 @@ pull_raw_pur <- function(
   years = "all", counties = "all", verbose = TRUE, quiet = FALSE, zip_dir = NULL
 ) {
 
-  # suppressMessages(
-  #   st <- RCurl::getURL("ftp://transfer.cdpr.ca.gov/pub/outgoing/pur_archives/",
-  #     verbose = T,
-  #     ftp.use.epsv = T,
-  #     dirlistonly = T
-  #   )
-  # )
   file_dt = list_pur_archives(
     base = "https://files.cdpr.ca.gov/pub/outgoing/pur_archives/",
     pattern = '\\d{4}\\.zip$',
