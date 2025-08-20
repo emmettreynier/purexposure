@@ -139,12 +139,12 @@ pull_raw_pur <- function(
   if (!"all" %in% counties) {
 
     raw_df <- purrr::map_dfr(years, help_pull_pur, file_dt = file_dt, counties = counties,
-                             quiet = quiet)
+                             quiet = quiet, dest_dir = dest_dir)
 
   } else {
 
     raw_df <- purrr::map_dfr(years, help_pull_pur, file_dt = file_dt, counties = "all",
-                             quiet = quiet)
+                             quiet = quiet, dest_dir = dest_dir)
 
   }
 
