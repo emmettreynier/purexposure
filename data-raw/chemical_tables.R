@@ -6,7 +6,7 @@ library(dplyr)
 
 pull_chemical_list <- function(year) {
 
-  url <- paste0("ftp://transfer.cdpr.ca.gov/pub/outgoing/pur_archives/pur",
+  url <- paste0("https://files.cdpr.ca.gov/pub/outgoing/pur_archives/pur",
                 year, ".zip")
   file <- paste0("pur", year, ".zip")
 
@@ -33,7 +33,8 @@ pull_chemical_list <- function(year) {
 
 }
 
-chemical_list <- purrr::map(1990:2017, pull_chemical_list)
-names(chemical_list) <- 1990:2017
+options(timeout = 600)
+chemical_list <- purrr::map(1990:2022, pull_chemical_list)
+names(chemical_list_new) <- 1990:2022
 
 usethis::use_data(chemical_list, overwrite = TRUE)

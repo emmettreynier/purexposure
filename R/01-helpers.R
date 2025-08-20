@@ -108,7 +108,7 @@ help_pull_pur <- function(year, counties = "all", quiet = FALSE) {
     }
 
     if (!is.null(to_be_downloaded)) {
-
+      options(timeout = 600)
       dir <- tempdir()
       setwd(dir)
       utils::download.file(url, destfile = file, mode = "wb", quiet = quiet)

@@ -5,3 +5,5 @@ inst/doc
 R/.DS_Store
 
 files-to-fix.md
+
+*.zip
