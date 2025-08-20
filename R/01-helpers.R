@@ -1,3 +1,42 @@
+list_pur_archives <- function(
+  base = "https://files.cdpr.ca.gov/pub/outgoing/pur_archives/",
+  pattern = NULL,
+  include_subdirs = FALSE
+) {
+  # normalize base to have exactly one trailing slash
+  base <- sub("/+$", "/", base)
+  resp <- httr2::request(base) |>
+    httr2::req_user_agent("purexposure-sfmigration/0.1") |>
+    httr2::req_perform()
+  html <- xml2::read_html(httr2::resp_body_string(resp))
+  hrefs <- rvest::html_attr(rvest::html_elements(html, "a"), "href")
+  hrefs <- hrefs[!is.na(hrefs)]
+  # drop parent links and anchors
+  hrefs <- hrefs[!hrefs %in% c("../", "/", "#")]
+  # make every href absolute against the base (handles leading '/' correctly)
+  abs_urls <- vapply(hrefs, xml2::url_absolute, base = base, FUN.VALUE = character(1))
+  # detect directories (trailing slash after normalization)
+  is_dir <- grepl("/$", abs_urls)
+  # pick items to keep
+  keep <- if (isTRUE(include_subdirs)) rep(TRUE, length(abs_urls)) else !is_dir
+  abs_urls <- abs_urls[keep]
+  # derive simple names (filename or last path component)
+  # strip trailing slash (if any), then take basename
+  clean_urls <- sub("/+$", "", abs_urls)
+  names_out  <- basename(clean_urls)
+  # optional pattern filter (apply to names, like "^pur\\d{4}\\.zip$")
+  if (!is.null(pattern)) {
+    sel <- grepl(pattern, names_out, ignore.case = TRUE)
+    names_out <- names_out[sel]
+    clean_urls <- clean_urls[sel]
+  }
+  data.table::data.table(
+    name = names_out, 
+    url = clean_urls, 
+    year = stringr::str_extract(names_out, '\\d{4}(?=\\.zip)') |> as.integer()
+  )
+}
+
 #' @importFrom magrittr %>%
 help_pull_pur <- function(year, counties = "all", quiet = FALSE) {
 
@@ -6,21 +45,21 @@ help_pull_pur <- function(year, counties = "all", quiet = FALSE) {
                 year, ".zip")
   file <- paste0("pur", year, ".zip")
 
-  if (!"all" %in% counties) {
-    codes <- find_counties(counties)
-  } else {
+  # if (!"all" %in% counties) {
+  #   codes <- find_counties(counties)
+  # } else {
 
-    sm_year <- substr(year, 3, 4)
+  #   sm_year <- substr(year, 3, 4)
 
-    if (year > 2015) {
-      files <- grep(paste0("udc", sm_year, "_"), list.files(paste0("pur", year)),
-                    value = TRUE)
-    } else {
-      files <- grep(paste0("udc", sm_year, "_"), list.files(), value = TRUE)
-    }
+  #   if (year > 2015) {
+  #     files <- grep(paste0("udc", sm_year, "_"), list.files(paste0("pur", year)),
+  #                   value = TRUE)
+  #   } else {
+  #     files <- grep(paste0("udc", sm_year, "_"), list.files(), value = TRUE)
+  #   }
 
-    codes <- substr(files, 7, 8)
-  }
+  #   codes <- substr(files, 7, 8)
+  # }
 
   if (!exists("purexposure_package_env")) {
 

@@ -50,26 +50,35 @@
 #' }
 #' @importFrom magrittr %>%
 #' @export
-pull_raw_pur <- function(years = "all", counties = "all", verbose = TRUE,
-                         quiet = FALSE) {
+pull_raw_pur <- function(
+  years = "all", counties = "all", verbose = TRUE, quiet = FALSE
+) {
 
-  suppressMessages(
-    st <- RCurl::getURL("ftp://transfer.cdpr.ca.gov/pub/outgoing/pur_archives/",
-                        verbose = T,
-                        ftp.use.epsv = T,
-                        dirlistonly = T)
+  # suppressMessages(
+  #   st <- RCurl::getURL("ftp://transfer.cdpr.ca.gov/pub/outgoing/pur_archives/",
+  #     verbose = T,
+  #     ftp.use.epsv = T,
+  #     dirlistonly = T
+  #   )
+  # )
+  file_dt = list_pur_archives(
+    base = "https://files.cdpr.ca.gov/pub/outgoing/pur_archives/",
+    pattern = '\\d{4}\\.zip$',
+    include_subdirs = FALSE
   )
-
-  most_recent_year <- as.integer(stringr::str_sub(st, nchar(st)-9, nchar(st)-6))
+  valid_file_years = file_dt[year >= 1990]$year
 
   if ("all" %in% tolower(years)) {
-    years <- 1990:most_recent_year
+    years <- valid_file_years
   }
   if (!all(is.numeric(years))) {
     stop("Years should be four-digit numeric values.")
   }
-  if (all(is.numeric(years)) & (min(years) < 1990 | max(years) > most_recent_year)) {
-    stop(paste0("Years should be between 1990 and ", most_recent_year, "."))
+  if (all(is.numeric(years)) & !all(years %in% valid_file_years)) {
+    stop(paste(
+        paste(setdiff(years, valid_file_years), collapse = ', '), 
+        'not in PUR archive.'
+    ))
   }
 
   code_df <- purexposure::county_codes
