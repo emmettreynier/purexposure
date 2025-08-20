@@ -25,7 +25,7 @@
 #' @param quiet TRUE / FALSE indicating whether you would like a
 #'   message and progress bar printed for each year of PUR data that
 #'   is downloaded. The default value is FALSE.
-#' @param dest_dir directory to put zip files in. If \code{NULL}, put in temp dir.
+#' @param zip_dir directory to put zip files in. If \code{NULL}, put in temp dir.
 #'
 #' @return A data frame with 33 columns. Different years and counties for which
 #'   data was pulled are indicated by \code{applic_dt} and \code{county_cd},
@@ -53,7 +53,7 @@
 #' @import data.table
 #' @export
 pull_raw_pur <- function(
-  years = "all", counties = "all", verbose = TRUE, quiet = FALSE, dest_dir = NULL
+  years = "all", counties = "all", verbose = TRUE, quiet = FALSE, zip_dir = NULL
 ) {
 
   # suppressMessages(
@@ -139,12 +139,12 @@ pull_raw_pur <- function(
   if (!"all" %in% counties) {
 
     raw_df <- purrr::map_dfr(years, help_pull_pur, file_dt = file_dt, counties = counties,
-                             quiet = quiet, dest_dir = dest_dir)
+                             quiet = quiet, zip_dir = zip_dir)
 
   } else {
 
     raw_df <- purrr::map_dfr(years, help_pull_pur, file_dt = file_dt, counties = "all",
-                             quiet = quiet, dest_dir = dest_dir)
+                             quiet = quiet, zip_dir = zip_dir)
 
   }
 
@@ -202,6 +202,7 @@ pull_raw_pur <- function(
 #' @param aerial_ground TRUE / FALSE indicating if you would like to
 #'   retain aerial/ground application data ("A" = aerial, "G" = ground, and
 #'   "O" = other.) The default is TRUE.
+#' @param zip_dir directory where already downloaded zips live. If \code{NULL}, put in temp dir.
 #' @param ... Used internally.
 #'
 #' @return A data frame:
@@ -322,12 +323,12 @@ pull_clean_pur <- function(years = "all", counties = "all", chemicals = "all",
                            sum_application = FALSE, unit = "section",
                            sum = "all", chemical_class = NULL,
                            aerial_ground = TRUE, verbose = TRUE,
-                           quiet = FALSE, ...) {
+                           quiet = FALSE, zip_dir = NULL, ...) {
 
   args <- list(...)
   if (is.null(args$raw_pur)) {
     raw_df <- pull_raw_pur(years = years, counties = counties, verbose = verbose,
-                           quiet = quiet)
+                           quiet = quiet, zip_dir = zip_dir)
   } else {
     raw_df <- args$raw_pur
   }

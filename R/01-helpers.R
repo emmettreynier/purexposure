@@ -38,15 +38,15 @@ list_pur_archives <- function(
 }
 
 #' @import data.table 
-help_pull_pur <- function(year_in, file_dt, counties = "all", quiet = FALSE, dest_dir = NULL){
-  if(is.null(dest_dir)) dest_dir = tempdir()
-  file = here::here(dest_dir, file_dt[year == year_in]$name)
-  # Check if zip already downloaded in dest_dir
-  dir.create(here::here(dest_dir), showWarnings = FALSE)
-  already_downloaded = list.files(here::here(dest_dir), pattern = 'pur\\d{4}\\.zip$') |>
+help_pull_pur <- function(year_in, file_dt, counties = "all", quiet = FALSE, zip_dir = NULL){
+  if(is.null(zip_dir)) zip_dir = tempdir()
+  file = here::here(zip_dir, file_dt[year == year_in]$name)
+  # Check if zip already downloaded in zip_dir
+  dir.create(here::here(zip_dir), showWarnings = FALSE)
+  already_downloaded = list.files(here::here(zip_dir), pattern = 'pur\\d{4}\\.zip$') |>
     stringr::str_extract('\\d{4}') |>
     as.numeric()
-  # Download and put in dest_dir if not already downloaded 
+  # Download and put in zip_dir if not already downloaded 
   if(!(year_in %in% already_downloaded)){
     options(timeout = 600)
     utils::download.file(

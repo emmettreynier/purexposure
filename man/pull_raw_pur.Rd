@@ -9,7 +9,7 @@ pull_raw_pur(
   counties = "all",
   verbose = TRUE,
   quiet = FALSE,
-  dest_dir = NULL
+  zip_dir = NULL
 )
 }
 \arguments{
@@ -35,7 +35,7 @@ default value is TRUE.}
 message and progress bar printed for each year of PUR data that
 is downloaded. The default value is FALSE.}
 
-\item{dest_dir}{directory to put zip files in. If \code{NULL}, put in temp dir.}
+\item{zip_dir}{directory to put zip files in. If \code{NULL}, put in temp dir.}
 }
 \value{
 A data frame with 33 columns. Different years and counties for which

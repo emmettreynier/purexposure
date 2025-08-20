@@ -15,6 +15,7 @@ pull_clean_pur(
   aerial_ground = TRUE,
   verbose = TRUE,
   quiet = FALSE,
+  zip_dir = NULL,
   ...
 )
 }
@@ -84,6 +85,8 @@ default value is TRUE.}
 \item{quiet}{TRUE / FALSE indicating whether you would like a
 message and progress bar printed for each year of PUR data that
 is downloaded. The default value is FALSE.}
+
+\item{zip_dir}{directory where already downloaded zips live. If \code{NULL}, put in temp dir.}
 
 \item{...}{Used internally.}
 }
