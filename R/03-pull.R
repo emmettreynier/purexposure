@@ -453,15 +453,14 @@ pull_clean_pur <- function(years = "all", counties = "all", chemicals = "all",
 
   df <- df %>% dplyr::mutate(year = as.character(lubridate::year(applic_dt)))
 
-  df2 <- calc_max %>%
-    dplyr::select(chem_code, year, calc_max) %>%
-    dplyr::right_join(df, by = c("chem_code", "year")) %>%
-    dplyr::mutate(outlier = ifelse((!is.na(calc_max) &
-                                      lbs_per_acre > calc_max), lbs_chm_used, NA),
-                  lbs_chm_used = ifelse(lbs_per_acre > calc_max,
-                                        calc_max*acre_treated, lbs_chm_used)) %>%
-    dplyr::rename(pur_code = county_cd) %>%
-    dplyr::ungroup()
+df2 <- calc_max %>%
+  dplyr::select(chem_code, year, calc_max) %>%
+  dplyr::right_join(df, by=c("chem_code", "year")) %>%
+  dplyr::mutate(
+    outlier_flag = ifelse(!is.na(calc_max) & lbs_per_acre > calc_max, 1, 0)
+  ) %>%
+  dplyr::rename(pur_code = county_cd) %>%
+  dplyr::ungroup()
 
   county <- purexposure::county_codes
 
