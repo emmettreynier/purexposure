@@ -469,7 +469,7 @@ df2 <- calc_max %>%
     dplyr::mutate(use_no = paste0(use_no, "_", lubridate::year(applic_dt)),
                   kg_chm_used = lbs_chm_used/2.20562) %>%
     dplyr::select(chem_code, chemname, kg_chm_used, MTRS, MTR, county_name,
-                  pur_code, fips_code, applic_dt, aer_gnd_ind, use_no, outlier,
+                  pur_code, fips_code, applic_dt, aer_gnd_ind, use_no,
                   prodno) %>%
     dplyr::rename(section = MTRS,
                   township = MTR,
