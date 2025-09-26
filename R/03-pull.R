@@ -602,7 +602,7 @@ df2 <- calc_max %>%
     out <- out %>% dplyr::mutate(prodno = as.integer(prodno))
   }
 
-  return()
+  return(out)
 
 }
 
