@@ -58,9 +58,19 @@ help_pull_pur <- function(year_in, file_dt, counties = "all", quiet = FALSE, zip
   }
   # Extract zip to the dest dir
   utils::unzip(file, exdir = stringr::str_remove(file,'\\.zip'))
+  
+  # Determine where to look for data files
+  if(year_in == 2020) {
+    # For 2020+, files are in nested directory
+    data_dir <- file.path(stringr::str_remove(file,'\\.zip'), paste0("pur", year_in), paste0("pur", year_in))
+  } else {
+    # For all other years, use the original logic
+    data_dir <- stringr::str_remove(file,'\\.zip')
+  }
+  
   # Bind county tables (filtering to `counties`)
   all_files = list.files(
-    stringr::str_remove(file,'\\.zip'),
+    data_dir,
     pattern = '^udc\\d{2}_\\d{2}\\.txt$', 
     full.names = TRUE
   )
