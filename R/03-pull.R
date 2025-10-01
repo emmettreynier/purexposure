@@ -453,15 +453,14 @@ pull_clean_pur <- function(years = "all", counties = "all", chemicals = "all",
 
   df <- df %>% dplyr::mutate(year = as.character(lubridate::year(applic_dt)))
 
-  df2 <- calc_max %>%
-    dplyr::select(chem_code, year, calc_max) %>%
-    dplyr::right_join(df, by = c("chem_code", "year")) %>%
-    dplyr::mutate(outlier = ifelse((!is.na(calc_max) &
-                                      lbs_per_acre > calc_max), lbs_chm_used, NA),
-                  lbs_chm_used = ifelse(lbs_per_acre > calc_max,
-                                        calc_max*acre_treated, lbs_chm_used)) %>%
-    dplyr::rename(pur_code = county_cd) %>%
-    dplyr::ungroup()
+df2 <- calc_max %>%
+  dplyr::select(chem_code, year, calc_max) %>%
+  dplyr::right_join(df, by=c("chem_code", "year")) %>%
+  dplyr::mutate(
+    outlier_flag = ifelse(!is.na(calc_max) & lbs_per_acre > calc_max, 1, 0)
+  ) %>%
+  dplyr::rename(pur_code = county_cd) %>%
+  dplyr::ungroup()
 
   county <- purexposure::county_codes
 
@@ -470,7 +469,7 @@ pull_clean_pur <- function(years = "all", counties = "all", chemicals = "all",
     dplyr::mutate(use_no = paste0(use_no, "_", lubridate::year(applic_dt)),
                   kg_chm_used = lbs_chm_used/2.20562) %>%
     dplyr::select(chem_code, chemname, kg_chm_used, MTRS, MTR, county_name,
-                  pur_code, fips_code, applic_dt, aer_gnd_ind, use_no, outlier,
+                  pur_code, fips_code, applic_dt, aer_gnd_ind, use_no,
                   prodno) %>%
     dplyr::rename(section = MTRS,
                   township = MTR,
