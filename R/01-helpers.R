@@ -67,6 +67,7 @@ help_pull_pur <- function(year_in, file_dt, counties = "all", quiet = FALSE, zip
     # For other years, use original logic
     search_dir <- stringr::str_remove(file,'\\.zip')
   }
+  print(search_dir)
   
   # Bind county tables (filtering to `counties`)
   all_files = list.files(
