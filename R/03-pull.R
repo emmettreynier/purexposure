@@ -335,7 +335,7 @@ pull_clean_pur <- function(years = "all", counties = "all", chemicals = "all",
                   township = as.character(paste0(base_ln_mer, township_pad, tship_dir)),
                   MTR = as.character(paste0(township, range, range_dir))) %>%
     dplyr::select(chem_code, lbs_chm_used, MTRS, MTR, county_cd, applic_dt,
-                  aer_gnd_ind, use_no, acre_treated, unit_treated, prodno) %>%
+                  aer_gnd_ind, use_no, acre_treated, unit_treated, prodno, flag_outlier) %>%
     dplyr::mutate(unit_treated = as.factor(unit_treated)) %>%
     dplyr::filter(!MTRS %in% c(".0..0..0.", ".00.00.00", "NANANANANANA"),
                   unit_treated %in% c("A", "S")) %>%
@@ -470,7 +470,7 @@ df2 <- calc_max %>%
                   kg_chm_used = lbs_chm_used/2.20562) %>%
     dplyr::select(chem_code, chemname, kg_chm_used, MTRS, MTR, county_name,
                   pur_code, fips_code, applic_dt, aer_gnd_ind, use_no,
-                  prodno) %>%
+                  prodno, flag_outlier) %>%
     dplyr::rename(section = MTRS,
                   township = MTR,
                   date = applic_dt,

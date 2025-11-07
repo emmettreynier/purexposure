@@ -63,6 +63,8 @@ help_pull_pur <- function(year_in, file_dt, counties = "all", quiet = FALSE, zip
   if(year_in == 2020) {
     # For 2020, files are in nested pur2020/pur2020/ directory
     search_dir <- file.path(stringr::str_remove(file,'\\.zip'), paste0("pur", year_in))
+  } else if(year_in == 2022)  {
+    search_dir <- file.path(stringr::str_remove(file,'\\.zip'), "ftp_files")
   } else {
     # For other years, use original logic
     search_dir <- stringr::str_remove(file,'\\.zip')
@@ -85,6 +87,28 @@ help_pull_pur <- function(year_in, file_dt, counties = "all", quiet = FALSE, zip
     files_to_read = all_files
   }
   all_dt = purrr::map_dfr(files_to_read, help_read_in_counties)
+  # join with the outlier table 
+  outlier_dt = suppressWarnings(suppressMessages(
+    readr::read_csv(
+      list.files(
+        search_dir, 
+        pattern = 'outlier\\d{2,4}\\.txt', 
+        full.names = TRUE
+      ), 
+      progress = FALSE, 
+      col_names = c('use_no','flag_200','flag_50m','flag_nn'), 
+      col_types = 'cccc'
+    ) |> 
+    dplyr::mutate(
+      flag_outlier = flag_200 == 'Y' | flag_50m == 'Y' | flag_nn == 'Y'
+    )
+  ))
+  all_dt = 
+    dplyr::left_join(
+      all_dt, 
+      outlier_dt, 
+      by = 'use_no'
+    )
   return(all_dt)
 }
 
